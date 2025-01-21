@@ -1,0 +1,38 @@
+module tb_automatic_door_controller;  
+   reg clk;  
+    reg rst;  
+    reg sensor;  
+    reg close_button;  
+ wire door_open;  
+      automatic_door_controller uut (  
+        .clk(clk),  
+        .rst(rst),  
+        .sensor(sensor),  
+        .close_button(close_button),  
+        .door_open(door_open)  
+    );  
+    always #5 clk = ~clk;  
+     initial begin  
+        clk = 0;  
+        rst = 0;  
+        sensor = 0;  
+        close_button = 0;  
+        rst = 1;  
+        #10;  
+        rst = 0;  
+        #10;  
+       sensor = 1;  
+        #20;  
+        sensor = 0;  
+        #20;  
+         close_button = 1;  
+        #20;  
+        close_button = 0;  
+        #20;  
+      $finish;  
+    End  
+     initial begin  
+  $monitor("Time: %0t | rst: %b | sensor: %b | close_button: %b | door_open: %b", $time,   rst,    
+sensor, close_button, door_open);  
+    end  
+   endmodule
