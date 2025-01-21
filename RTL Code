@@ -1,0 +1,50 @@
+module automatic_door_controller (  
+    input wire clk,  
+    input wire rst,  
+    input wire sensor,  
+    input wire close_button,  
+    output reg door_open  
+);  
+    typedef enum reg [1:0] {  
+        IDLE = 2'b00,  
+        OPENING = 2'b01,  
+        OPEN = 2'b10,  
+        CLOSING = 2'b11  
+    } state_t;  
+state_t current_state, next_state;  
+always @(posedge clk or posedge rst) begin  
+        if (rst) begin  
+            current_state <= IDLE;  
+        end else begin  
+            current_state <= next_state;  
+        end  
+    end  
+ always @(*) begin  
+        case (current_state)  
+            IDLE: begin  
+                if (sensor) next_state = OPENING;  
+                else next_state = IDLE;  
+            end  
+        OPENING: begin  
+                next_state = OPEN;  
+            end  
+            OPEN: begin  
+                if (close_button) next_state = CLOSING;  
+                else next_state = OPEN;  
+            end  
+            CLOSING: begin  
+                next_state = IDLE;  
+            end  
+            default: next_state = IDLE;  
+        endcase  
+    end  
+always @(*) begin  
+        case (current_state)  
+            IDLE: door_open = 0;  
+            OPENING: door_open = 1;  
+            OPEN: door_open = 1;  
+            CLOSING: door_open = 0;  
+            default: door_open = 0;  
+        endcase  
+    end  
+endmodule
